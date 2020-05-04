@@ -1,6 +1,6 @@
 # Grouped LayerList Widget
 
-Put Description here
+
 
 
 ### Contact Information

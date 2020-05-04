@@ -1,0 +1,45 @@
+<div>
+  <div style="display: none">
+    <label>${nls.configText}</label><input data-dojo-attach-point="textNode">
+
+  </div>
+  <div>
+    <label>Enter the Group Name: </label>
+    <input id="grpTxtName" type="text" class="wide"
+       data-dojo-attach-point="grpTxtName"
+       data-dojo-type="dijit/form/ValidationTextBox"/>
+  </div>
+  <div class="content">
+    <div class="items-list jimu-not-selectable">
+      <div class="add-btn" data-dojo-attach-event="click:_onBtnAddItemClicked">
+        <div class="icon"></div>
+        <div class="tip">Create Group</div>
+      </div>
+      <div class="items-list-content" data-dojo-attach-point="listContent" data-dojo-attach-event="click:_onListContentClicked"></div>
+    </div>
+    <div class="separator not-visible" data-dojo-attach-point="separator"></div>
+    <div class="single-setting-content" data-dojo-attach-point="singleSettingContent">
+      <div class="layer-selector-part" data-dojo-attach-point="controlPopupMenuPart">
+        <div class="title">Layers in the Map</div>
+        <div class="layer-selector-div" data-dojo-attach-point="layerSelectorDiv"></div>
+      </div>
+      <div class="no-task-tip" data-dojo-attach-point="noTaskTip"></div>
+    </div>
+    <!--<div id="groupsDiv" data-dojo-attach-point="grpsNode" style="width: 100%; height: 200px"></div>-->
+
+    <!--<div id="lgGrps" data-dojo-attach-point="lgGrpsNode" style="width: 100%; height: 300px"></div>-->
+
+
+
+    <!--<div class="row">-->
+      <!--<div class="left-cell">-->
+        <!--<label for="Group1" class="fixedlen">${nls.gpNameHeadings}</label>-->
+        <!--<select id="group1" multiple="true" name="multiselect" data-dojo-type="dojox.form.CheckedMultiSelect"-->
+                <!--data-dojo-attach-point="GroupsList">-->
+        <!--</select>-->
+
+      <!--</div>-->
+    <!--</div>-->
+  </div>
+
+</div>

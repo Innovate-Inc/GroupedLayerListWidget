@@ -1,0 +1,327 @@
+/*.jimu-widget-demo div:first-child{*/
+  /*color: red;*/
+/*}*/
+
+
+.jimu-widget-grouped .dijitTitlePaneContentInner {
+  padding: 0px;
+}
+
+.jimu-widget-grouped #mainMenu {
+  width: 100%;
+}
+
+/*toggle switch*/
+.onoffswitch {
+  margin-top: 3px;
+  position: relative; width: 42px;
+  -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+  display: none;
+}
+.onoffswitch-label {
+  display: block; overflow: hidden; cursor: pointer;
+  border: 2px solid #FFFFFF; border-radius: 30px;
+}
+.onoffswitch-inner {
+  display: block; width: 200%; margin-left: -100%;
+  transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+  display: block; float: left; width: 50%; height: 15px; padding: 0; line-height: 15px;
+  font-size: 8px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+  box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+  content: "ON";
+  padding-left: 5px;
+  background-color: #56D17F; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+  content: "OFF";
+  padding-right: 5px;
+  background-color: #EB4646; color: #FFFFFF;
+  text-align: right;
+}
+.onoffswitch-switch {
+  height: 12px;
+  display: block; width: 11px; margin: 3px;
+  background: #FFFFFF;
+  position: absolute; top: 0; bottom: 0;
+  right: 24px;
+  border: 2px solid #FFFFFF; border-radius: 15px;
+  transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+  margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+  right: 0px;
+}
+.jimu-widget-grouped .layerDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*height: 27px;*/
+}
+.jimu-widget-grouped .layerBTN{
+  display: flex;
+  align-items: center;
+  margin-left: 3px;
+  height: 50px;
+}
+.jimu-widget-grouped .layerLabel {
+  font-size: 12px;
+  margin-left: 5px;
+  margin-top: 3px;
+  max-width: 250px;
+}
+
+.jimu-widget-grouped .layerDiv:hover{
+  background-color: #86909c;
+}
+.jimu-widget-grouped .dijitTitlePaneTextNode {
+  font-size: 16px;
+  font-weight: bold;
+  color: #86909c;
+}
+.jimu-widget-grouped .dijitArrowNode {
+  /*display:none;*/
+  background-image: url("https://desktop-52isfuu:3344/webappbuilder/apps/4/images/pm.png");
+  background-repeat: no-repeat;
+  height: 8px;
+  width: 7px;
+}
+/*.claro .dijitTitlePane .dijitArrowNode {*/
+  /*background-image: url("http://localhost/myArrows.png");*/
+/*}*/
+
+.claro .dijitTitlePaneTitle {
+  background-color: white;
+  background-image: none !important;
+
+  border-top: none !important;
+  border-right: none !important;
+  border-left: none !important;
+}
+.jimu-widget-grouped .claro .dijitTitlePaneTitleFocus {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /*padding-bottom: 2px;*/
+}
+.jimu-widget-grouped .groupBackground {
+  /*background-color: black;*/
+}
+.jimu-widget-grouped .jimu-widget-frame .jimu-container {
+  /*background-color: black;*/
+}
+
+/*popup menu*/
+.jimu-widget-grouped .layers-list-popupMenu-div{
+  position: relative;
+  width: 22px;
+  height: 40px;
+  /*background-color: #d9dde0;*/
+  cursor: pointer;
+  border-radius: 2px;
+  /*************/
+  float: right;
+  /*margin-right: 4px;*/
+  padding-top: 14px;
+  background-image: url("../images/more_normal.svg");
+  background-repeat: no-repeat;
+  background-position: center 23px;
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div:hover{
+  background-image: url("../images/more_hover.svg");
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div .popup-menu-button{
+  background: none;
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div .popup-menu-button:hover{
+  background: none;
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div .loading-section {
+  width: 17px;
+  height: 17px;
+  top: 14px;
+  left: 2px;
+  z-index: 1;
+  margin: 0;
+}
+
+.jimu-rtl .jimu-widget-grouped .layers-list-popupMenu-div .loading-section {
+  left: auto;
+  right: 2px;
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div .popup-menu-loading{
+  width: 17px;
+  height: 17px;
+  margin: -9px 0 0 2px;
+  border-radius: 25px;
+  background-image: url("../images/loading.gif");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.jimu-rtl .jimu-widget-grouped .layers-list-popupMenu-div .popup-menu-loading{
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-div-selected{
+  width: 13px;
+  height: 13px;
+  background-color: #ffffff;
+  border-radius: 2px;
+}
+
+.jimu-widget-grouped .layers-list-popupMenu-image{
+  position: absolute;
+  top: -5px;
+  left: 10px;
+}
+
+.jimu-widget-grouped .dijitEditorIcon{
+  background-image: url("../images/more_normal.svg");
+  width: 17px;
+  height: 17px;
+}
+
+.jimu-widget-grouped .dijitReset .dijitInline .dijitArrowButtonInner{
+  display: none;
+}
+
+.jimu-widget-grouped .dijitButtonNode .dijitDropDownButton {
+  border: none;
+}
+
+.jimu-widget-grouped .claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode{
+  border: none;
+  color: transparent;
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.jimu-widget-grouped .claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode  :hover{
+  border: none;
+  color: transparent;
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.jimu-widget-grouped .dijit .dijitReset .dijitInline .drop-Menu-Btn .dijitDropDownButton .dijitDropDownButtonHover .dijitHover{
+  color: transparent;
+  border: none;
+}
+
+.jimu-widget-grouped .claro .dijitButton .dijitButtonNode, .claro .dijitDropDownButton .dijitButtonNode, .claro .dijitComboButton .dijitButtonNode, .claro .dijitToggleButton .dijitButtonNode {
+  padding: 2px 4px 4px 4px;
+  color: transparent;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+
+  background-image: none;
+  /* background-image: -webkit-linear-gradient(#ffffff 0px, rgba(255, 255, 255, 0) 3px, rgba(255, 255, 255, 0.75) 100%); */
+  background-image: none;
+  /* background-image: linear-gradient(#ffffff 0px, rgba(255, 255, 255, 0) 3px, rgba(255, 255, 255, 0.75) 100%); */
+  _background-image: none;
+}
+
+.jimu-widget-grouped .dijitSelectLabel {
+  font-size:15px;
+}
+.jimu-widget-grouped .dijitMenuItemLabel{
+  font-size:15px;
+}
+
+.jimu-widget-grouped .popup-menu-transparency-body {
+  position: absolute;
+  /*
+  background-color: #d9dde0;
+  outline-color:#ffffff;
+  outline-style:solid;
+  */
+  background-color: #ffffff;
+  box-shadow: 0px 0px 4px 2px rgba(177, 177, 177, 0.5);
+  outline-width:1px;
+  width: 220px;
+  height:50px;
+  padding-left: 2%;
+  padding-right: 2%;
+  color: #686868;
+  z-index: 2;
+  font-size: 12px;
+  display: none;
+}
+
+.jimu-widget-grouped .popup-menu-nontransparency-body {
+  position: absolute;
+
+  outline-color:#ffffff;
+  outline-style:solid;
+  outline-width:1px;
+  overflow:auto;
+  /*color: #000000;*/
+  font-size: 12px;
+  width: 350px;
+  padding-left: 1%;
+  padding-right: 1%;
+  z-index: 2;
+  right: 0px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 4px 2px rgba(25, 25, 25, 0.5);
+  outline-style: none;
+}
+
+.jimu-widget-grouped .popup-menu-transparency-body .label {
+  overflow: hidden;
+  margin-top: 2px;
+  margin-bottom: 1px;
+}
+/*popup menu*/
+/*.jimu-widget-grouped .popup-menu-transparency-body {*/
+  /*position: absolute;*/
+  /*!**/
+  /*background-color: #d9dde0;*/
+  /*outline-color:#ffffff;*/
+  /*outline-style:solid;*/
+  /**!*/
+  /*background-color: #ffffff;*/
+  /*box-shadow: 0px 0px 4px 2px rgba(177, 177, 177, 0.5);*/
+  /*outline-width:1px;*/
+  /*width: 220px;*/
+  /*height:50px;*/
+  /*padding-left: 2%;*/
+  /*padding-right: 2%;*/
+  /*color: #686868;*/
+  /*z-index: 2;*/
+  /*font-size: 12px;*/
+  /*display: none;*/
+/*}*/
+
+/*.jimu-widget-grouped .popup-menu-nontransparency-body {*/
+  /*position: absolute;*/
+
+  /*outline-color:#ffffff;*/
+  /*outline-style:solid;*/
+  /*outline-width:1px;*/
+  /*overflow:auto;*/
+  /*!*color: #000000;*!*/
+  /*font-size: 12px;*/
+  /*width: 350px;*/
+  /*padding-left: 1%;*/
+  /*padding-right: 1%;*/
+  /*z-index: 2;*/
+  /*right: 0px;*/
+  /*background-color: #ffffff;*/
+  /*box-shadow: 0px 0px 4px 2px rgba(25, 25, 25, 0.5);*/
+  /*outline-style: none;*/
+/*}*/

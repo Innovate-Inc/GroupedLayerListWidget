@@ -72,7 +72,7 @@
   height: 50px;
 }
 .jimu-widget-grouped .layerLabel {
-  font-size: 12px;
+  font-size: 14px;
   margin-left: 5px;
   margin-top: 3px;
   max-width: 250px;
@@ -87,8 +87,8 @@
   color: #ffffff;
 }
 .jimu-widget-grouped .dijitArrowNode {
-  display:none;
-  /*background-image: url("https://desktop-52isfuu:3344/webappbuilder/apps/4/images/pm.png");*/
+  /*display:none;*/
+  background-image: url("https://desktop-52isfuu:3344/webappbuilder/apps/4/images/pm.png");
   background-repeat: no-repeat;
   height: 8px;
   width: 7px;
@@ -286,8 +286,9 @@
   margin-top: 2px;
   margin-bottom: 1px;
 }
+
 /*popup menu*/
-/*.jimu-widget-grouped .popup-menu-transparency-body {*/
+/*.jimu-widget-wwf-grouped .popup-menu-transparency-body {*/
   /*position: absolute;*/
   /*!**/
   /*background-color: #d9dde0;*/
@@ -307,7 +308,7 @@
   /*display: none;*/
 /*}*/
 
-/*.jimu-widget-grouped .popup-menu-nontransparency-body {*/
+/*.jimu-widget-wwf-grouped .popup-menu-nontransparency-body {*/
   /*position: absolute;*/
 
   /*outline-color:#ffffff;*/

@@ -139,25 +139,23 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
       layerInfoNode.getLayerType().then(lang.hitch(layerInfoNode, function(layerType){
         //Set up option for layer types
-        var RootLayerOnly = [
-                            //"zoomto",
-                            //"transparency",
-                            "url"];
+        var RootLayerOnly = ["zoomto", "Transparency", "url"];
         var KMLFolderOnly = [
           {
             "name": "url",
             "label": "Show item details"
           }];
         var RootLayerAndFeatureLayer = [
-          // {
-          //   "name": "zoomto",
-          //   "label": "Zoom to"
-          // },
-          // {
-          //   "name": "changeSymbology",
-          //   "label": "Change layer symbol"
-          // },
           {
+            "name": "zoomto",
+            "label": "Zoom to"
+          },{
+            "name": "Transparency",
+            "label": "Transparency"
+          },{
+            "name": "changeSymbology",
+            "label": "Change layer symbol"
+          },{
             "name": "controlPopup",
             "label": "Disable pop-up"
           },{
@@ -167,17 +165,21 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             "name": "url",
             "label": "Show item details"
           }];
-        var FeatureLayerOnly =[{
+        var FeatureLayerOnly =[
+        {
+          "name": "Transparency",
+          "label": "Transparency"
+        },{
           "name": "controlPopup",
           "label": "Disable pop-up"
         },{
           "name": "controlLabels",
           "label": "Toggle labels"
         },
-        //   {
-        //   "name": "changeSymbology",
-        //   "label": "Change layer symbol"
-        // },
+          {
+          "name": "changeSymbology",
+          "label": "Change layer symbol"
+        },
           {
           "name": "table",
           "label": "View in attribute table"
@@ -298,43 +300,52 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       console.log("Transparency");
 
       if (!vs.transHorizSlider) {
-        vs._createTransparencyWidget(layerInfoNode);
-        vs.transHorizSlider.set("value", layerInfoNode.getOpacity());
+        vs._createTransparencyWidget(layerInfoNode, layerID);
+        // vs.transHorizSlider.set("value", layerInfoNode.getOpacity());
       }
-      domStyle.set(vs.transparencyDiv, "top", vs._getTransNodePosition().top);
-      if (isRTL) {
-        domStyle.set(vs.transparencyDiv, "left", vs._getTransNodePosition().right);
-      } else {
-        domStyle.set(vs.transparencyDiv, "right", vs._getTransNodePosition().right);
-      }
-      domStyle.set(vs.transparencyDiv, "display", "block");
-      //layerInfoNode.setOpacity(1 - evt.extraData.newTransValue);
     },
 
-    _getTransNodePosition: function() {
-      return {
-        top: "28px",
-        //left: "-107px"
-        //left: -1 * html.getStyle(this.transparencyDiv, 'width') + 'px'
-        right: "2px"
-      };
-    },
+    _createTransparencyWidget: function(layerInfoNode, layerID) {
+      layerNode = dom.byId(layerID + "_layer");
 
-    _createTransparencyWidget: function(layerInfoNode) {
+      var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode.parentElement, "last");
+      var sliderLabels = domConstruct.create("div", {class: "label"}, sliderDivContainerNode);
+      var sliderDivNode = domConstruct.create("div", null, sliderDivContainerNode);
+      var sliderLabelL = domConstruct.create("div", {class: "label-left jimu-float-leading", innerHTML:"Opaque"}, sliderLabels);
+      var sliderLabelT = domConstruct.create("div", {class: "label-right jimu-float-trailing", innerHTML:"Transparent"}, sliderLabels);
+      var sliderDivBody = domConstruct.create("div", {style: { padding: "0 15px 0 10px" }}, sliderDivContainerNode);
+      var sliderDivRulerNode = domConstruct.create("ol", {class: "transparency-rule"}, sliderDivBody);
+      var rootlayer = layerInfoNode.getRootNode();
       vs.transHorizSlider = new HorizSlider({
         minimum: 0,
         maximum: 1,
+        value: rootlayer.getOpacity(),
         intermediateChanges: true
-      }, vs.transparencyBody);
+      }, sliderDivNode);
 
       vs.own(this.transHorizSlider.on("change", lang.hitch(layerInfoNode, function(newTransValue) {
-        this.setOpacity(newTransValue);
+        var rootlayer = this.getRootNode();
+        rootlayer.setOpacity(newTransValue);
+        // console.log(this.getOpacity())
+        // this.setOpacity(newTransValue);
 
       })));
 
-      new HorzRuleLabels({
+      vs.horzRuleLabels = new HorzRuleLabels({
         container: "bottomDecoration"
-      }, vs.transparencyRule);
+      }, sliderDivRulerNode);
+      //Event to destroy the transparency elements once user is done witht them
+      on(vs.transHorizSlider, "blur", function(){
+        domConstruct.destroy(vs.transHorizSlider.id);
+        domConstruct.destroy(vs.horzRuleLabels.id);
+        domConstruct.destroy(sliderDivContainerNode);
+
+        vs.transHorizSlider = null;
+        vs.horzRuleLabels = null;
+        console.log("close Transparency window");
+      });
+
+
     },
 
     _openTable: function (layerInfoNode, layerID) {
@@ -389,47 +400,44 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         }
 
         //add request to get info about the layer
-        var requestHandle = esriRequest({
-          "url": layerUrl,
-          "content": {
-            "f": "json"
-          },
-          "callbackParamName": "callback"
-        });
-        requestHandle.then(requestSucceeded, requestFailed);
+        // var requestHandle = esriRequest({
+        //   "url": layerUrl,
+        //   "content": {
+        //     "f": "json"
+        //   },
+        //   "callbackParamName": "callback"
+        // });
+        // requestHandle.then(requestSucceeded, requestFailed);
 
-        function requestSucceeded(response){
-          console.log(response)
-          //Set vairable from json request
-
-          var mtitle = (response["name"] != undefined ? response["name"] : response["mapName"]);
-          var mDescription = (response["name"] != undefined ? response["description"] : response["serviceDescription"]);
-          var mCopyright = response["copyrightText"];
-
-          var dialogContent = "<div><b>Description:</b> " + mDescription + "</div></br>"
-              + "<div><b>Copyright:</b> " + mCopyright + "</div></br>";
-
-          if(layerUrl.indexOf("utility.arcgis.com") >= 0){
-
-          }else{
-            dialogContent = dialogContent + "<div>" +'<a class="menu-item-description" target="_blank" href="' +
-                layerUrl + '">' + "See More at the Rest Endpoint" + '</a>' + "</div>";
-          }
-
-          vs.myDialog.set("title", mtitle);
-          vs.myDialog.set("content",dialogContent);
-
-          vs.myDialog.show();
-        }
-        function requestFailed(response, io){
-          console.log(response)
-        }
-
-
+        // function requestSucceeded(response){
+        //   console.log(response)
+        //   //Set vairable from json request
+        //
+        //   var mtitle = (response["name"] != undefined ? response["name"] : response["mapName"]);
+        //   var mDescription = (response["name"] != undefined ? response["description"] : response["serviceDescription"]);
+        //   var mCopyright = response["copyrightText"];
+        //
+        //   var dialogContent = "<div><b>Description:</b> " + mDescription + "</div></br>"
+        //       + "<div><b>Copyright:</b> " + mCopyright + "</div></br>";
+        //
+        //   if(layerUrl.indexOf("utility.arcgis.com") >= 0){
+        //
+        //   }else{
+        //     dialogContent = dialogContent + "<div>" +'<a class="menu-item-description" target="_blank" href="' +
+        //         layerUrl + '">' + "See More at the Rest Endpoint" + '</a>' + "</div>";
+        //   }
+        //
+        //   vs.myDialog.set("title", mtitle);
+        //   vs.myDialog.set("content",dialogContent);
+        //
+        //   vs.myDialog.show();
+        // }
+        // function requestFailed(response, io){
+        //   console.log(response)
+        // }
 
 
-
-        //window.open(url, '_blank');
+        window.open(url, '_blank');
       }));
     },
 

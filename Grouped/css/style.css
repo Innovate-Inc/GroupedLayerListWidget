@@ -72,19 +72,19 @@
   height: 50px;
 }
 .jimu-widget-grouped .layerLabel {
-  font-size: 12px;
+  font-size: 14px;
   margin-left: 5px;
   margin-top: 3px;
   max-width: 250px;
 }
 
 .jimu-widget-grouped .layerDiv:hover{
-  background-color: #86909c;
+  background-color: #b7bbb8;
 }
 .jimu-widget-grouped .dijitTitlePaneTextNode {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
-  color: #86909c;
+  color: #ffffff;
 }
 .jimu-widget-grouped .dijitArrowNode {
   /*display:none;*/
@@ -98,7 +98,7 @@
 /*}*/
 
 .claro .dijitTitlePaneTitle {
-  background-color: white;
+  background-color: black;
   background-image: none !important;
 
   border-top: none !important;
@@ -111,10 +111,10 @@
   /*padding-bottom: 2px;*/
 }
 .jimu-widget-grouped .groupBackground {
-  /*background-color: black;*/
+  background-color: black;
 }
 .jimu-widget-grouped .jimu-widget-frame .jimu-container {
-  /*background-color: black;*/
+  background-color: black;
 }
 
 /*popup menu*/
@@ -286,8 +286,9 @@
   margin-top: 2px;
   margin-bottom: 1px;
 }
+
 /*popup menu*/
-/*.jimu-widget-grouped .popup-menu-transparency-body {*/
+/*.jimu-widget-wwf-grouped .popup-menu-transparency-body {*/
   /*position: absolute;*/
   /*!**/
   /*background-color: #d9dde0;*/
@@ -307,7 +308,7 @@
   /*display: none;*/
 /*}*/
 
-/*.jimu-widget-grouped .popup-menu-nontransparency-body {*/
+/*.jimu-widget-wwf-grouped .popup-menu-nontransparency-body {*/
   /*position: absolute;*/
 
   /*outline-color:#ffffff;*/

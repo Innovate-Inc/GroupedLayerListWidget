@@ -308,7 +308,8 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
     _createTransparencyWidget: function(layerInfoNode, layerID) {
       layerNode = dom.byId(layerID + "_layer");
 
-      var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode.parentElement, "last");
+      // var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode.parentElement, "last");
+      var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode, "last");
       var sliderLabels = domConstruct.create("div", {class: "label"}, sliderDivContainerNode);
       var sliderDivNode = domConstruct.create("div", null, sliderDivContainerNode);
       var sliderLabelL = domConstruct.create("div", {class: "label-left jimu-float-leading", innerHTML:"Opaque"}, sliderLabels);
@@ -319,13 +320,13 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       vs.transHorizSlider = new HorizSlider({
         minimum: 0,
         maximum: 1,
-        value: rootlayer.getOpacity(),
+        value: 1 - rootlayer.getOpacity(),
         intermediateChanges: true
       }, sliderDivNode);
 
       vs.own(this.transHorizSlider.on("change", lang.hitch(layerInfoNode, function(newTransValue) {
         var rootlayer = this.getRootNode();
-        rootlayer.setOpacity(newTransValue);
+        rootlayer.setOpacity(1 - newTransValue);
         // console.log(this.getOpacity())
         // this.setOpacity(newTransValue);
 

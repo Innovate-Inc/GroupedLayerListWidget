@@ -1,9 +1,9 @@
 define(['dojo/_base/declare', 'jimu/BaseWidget', 'dojo/_base/lang', 'dojo/dom', 'dojo/dom-class', 'dojo/on', 'dojo/dom-construct', 'dijit/TitlePane', 'dijit/form/DropDownButton', 'dijit/DropDownMenu', 'dijit/Menu', 'dijit/MenuItem', 'dijit/MenuSeparator',
   'dijit/CheckedMenuItem','jimu/LayerInfos/LayerInfos', 'jimu/LayerStructure', 'esri/layers/LayerDrawingOptions', 'jimu/dijit/Popup', 'jimu/dijit/RendererChooser', 'jimu/portalUrlUtils', 'jimu/WidgetManager',
-  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'dijit/Dialog'],
+  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'esri/symbols/jsonUtils', 'dijit/Dialog'],
 function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, DropDownButton, DropDownMenu, Menu, MenuItem,
          MenuSeparator, CheckedMenuItem, LayerInfos, LayerStructure, LayerDrawingOptions, Popup, RendererChooser, portalUrlUtils,
-         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, Dialog) {
+         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, jsonUtils, Dialog) {
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -139,6 +139,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
       layerInfoNode.getLayerType().then(lang.hitch(layerInfoNode, function(layerType){
         //Set up option for layer types
+        console.log("Layer Type: " + layerType);
         var RootLayerOnly = ["zoomto", "Transparency", "url"];
         var KMLFolderOnly = [
           {
@@ -465,6 +466,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
               if(vs.curLayer.type =='Feature Layer'){
                 if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
                   var layerRenderer = vs.symbolChooser.getRenderer();
+                  layerRenderer.defaultSymbol = null;
 
                   var layerDrawingOptions = [];
                   var layerDrawingOption = new LayerDrawingOptions();
@@ -502,17 +504,42 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             rend = layerObject.renderer;
           }
 
-        }else{
+        }else {
           rend = layerObject.renderer;
         }
 
+        if(!rend.defaultSymbol){
+          var testSymbol
+          if(rend.infos){
+            testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
+            testSymbol.color.a = 0
+            rend.defaultSymbol = testSymbol;
+          }
+        }
         vs.symbolChooser = new RendererChooser({
-          renderer: rend, //this._layerInfo.layerObject.renderer,
-          fields:["STATUS"]
+          renderer: rend,
+          fields:["type"]
         }, 'rendChanger');
-
         symPopup.resize();
       }));
+    },
+
+    _createdefultSymbol: function(dsymbol){
+      // _cloneSymbol:function(symbol){
+        if(!dsymbol){
+          return null;
+        }
+        var jsonSym = dsymbol.toJson();
+        var clone = jsonUtils.fromJson(jsonSym);
+        return clone;
+    // },
+      // if (symbolType.includes("marker")){
+      //   return "marker";
+      // }else if (symbolType.includes("line")){
+      //   return "line";
+      // }else if (symbolType.includes("fill")){
+      //   return "fill"
+      // }
     },
 
     _controlPopups: function(layerInfoNode, layerID){

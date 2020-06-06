@@ -1,9 +1,9 @@
 define(['dojo/_base/declare', 'jimu/BaseWidget', 'dojo/_base/lang', 'dojo/dom', 'dojo/dom-class', 'dojo/on', 'dojo/dom-construct', 'dijit/TitlePane', 'dijit/form/DropDownButton', 'dijit/DropDownMenu', 'dijit/Menu', 'dijit/MenuItem', 'dijit/MenuSeparator',
   'dijit/CheckedMenuItem','jimu/LayerInfos/LayerInfos', 'jimu/LayerStructure', 'esri/layers/LayerDrawingOptions', 'jimu/dijit/Popup', 'jimu/dijit/RendererChooser', 'jimu/portalUrlUtils', 'jimu/WidgetManager',
-  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'dijit/Dialog'],
+  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'esri/symbols/jsonUtils', 'dijit/Dialog'],
 function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, DropDownButton, DropDownMenu, Menu, MenuItem,
          MenuSeparator, CheckedMenuItem, LayerInfos, LayerStructure, LayerDrawingOptions, Popup, RendererChooser, portalUrlUtils,
-         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, Dialog) {
+         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, jsonUtils, Dialog) {
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -70,8 +70,8 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
     _buildGroup: function(g){
       //make a title pane for each group
-      // var tp = new TitlePane({title: '+ ' + g.name,
-      var tp = new TitlePane({title: g.name,
+      var tp = new TitlePane({title: '+ ' + g.name,
+      // var tp = new TitlePane({title: g.name,
         content: "",
         open: false});
       dom.byId("holder").appendChild(tp.domNode);
@@ -139,25 +139,24 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
       layerInfoNode.getLayerType().then(lang.hitch(layerInfoNode, function(layerType){
         //Set up option for layer types
-        var RootLayerOnly = [
-                            //"zoomto",
-                            //"transparency",
-                            "url"];
+        console.log("Layer Type: " + layerType);
+        var RootLayerOnly = ["zoomto", "Transparency", "url"];
         var KMLFolderOnly = [
           {
             "name": "url",
             "label": "Show item details"
           }];
         var RootLayerAndFeatureLayer = [
-          // {
-          //   "name": "zoomto",
-          //   "label": "Zoom to"
-          // },
-          // {
-          //   "name": "changeSymbology",
-          //   "label": "Change layer symbol"
-          // },
           {
+            "name": "zoomto",
+            "label": "Zoom to"
+          },{
+            "name": "Transparency",
+            "label": "Transparency"
+          },{
+            "name": "changeSymbology",
+            "label": "Change layer symbol"
+          },{
             "name": "controlPopup",
             "label": "Disable pop-up"
           },{
@@ -167,17 +166,21 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             "name": "url",
             "label": "Show item details"
           }];
-        var FeatureLayerOnly =[{
+        var FeatureLayerOnly =[
+        {
+          "name": "Transparency",
+          "label": "Transparency"
+        },{
           "name": "controlPopup",
           "label": "Disable pop-up"
         },{
           "name": "controlLabels",
           "label": "Toggle labels"
         },
-        //   {
-        //   "name": "changeSymbology",
-        //   "label": "Change layer symbol"
-        // },
+          {
+          "name": "changeSymbology",
+          "label": "Change layer symbol"
+        },
           {
           "name": "table",
           "label": "View in attribute table"
@@ -212,7 +215,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             i++;
           }
         }else if (isRootLayer){
-          var r = 0
+          var r = 0;
           for(var type in RootLayerOnly){
             var menuItem1 = new MenuItem({
               id: layerInfoNode.id + "_" + r,
@@ -298,43 +301,53 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       console.log("Transparency");
 
       if (!vs.transHorizSlider) {
-        vs._createTransparencyWidget(layerInfoNode);
-        vs.transHorizSlider.set("value", layerInfoNode.getOpacity());
+        vs._createTransparencyWidget(layerInfoNode, layerID);
+        // vs.transHorizSlider.set("value", layerInfoNode.getOpacity());
       }
-      domStyle.set(vs.transparencyDiv, "top", vs._getTransNodePosition().top);
-      if (isRTL) {
-        domStyle.set(vs.transparencyDiv, "left", vs._getTransNodePosition().right);
-      } else {
-        domStyle.set(vs.transparencyDiv, "right", vs._getTransNodePosition().right);
-      }
-      domStyle.set(vs.transparencyDiv, "display", "block");
-      //layerInfoNode.setOpacity(1 - evt.extraData.newTransValue);
     },
 
-    _getTransNodePosition: function() {
-      return {
-        top: "28px",
-        //left: "-107px"
-        //left: -1 * html.getStyle(this.transparencyDiv, 'width') + 'px'
-        right: "2px"
-      };
-    },
+    _createTransparencyWidget: function(layerInfoNode, layerID) {
+      layerNode = dom.byId(layerID + "_layer");
 
-    _createTransparencyWidget: function(layerInfoNode) {
+      // var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode.parentElement, "last");
+      var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode, "last");
+      var sliderLabels = domConstruct.create("div", {class: "label"}, sliderDivContainerNode);
+      var sliderDivNode = domConstruct.create("div", null, sliderDivContainerNode);
+      var sliderLabelL = domConstruct.create("div", {class: "label-left jimu-float-leading", innerHTML:"Opaque"}, sliderLabels);
+      var sliderLabelT = domConstruct.create("div", {class: "label-right jimu-float-trailing", innerHTML:"Transparent"}, sliderLabels);
+      var sliderDivBody = domConstruct.create("div", {style: { padding: "0 15px 0 10px" }}, sliderDivContainerNode);
+      var sliderDivRulerNode = domConstruct.create("ol", {class: "transparency-rule"}, sliderDivBody);
+      var rootlayer = layerInfoNode.getRootNode();
       vs.transHorizSlider = new HorizSlider({
         minimum: 0,
         maximum: 1,
+        value: 1 - rootlayer.getOpacity(),
         intermediateChanges: true
-      }, vs.transparencyBody);
+      }, sliderDivNode);
 
       vs.own(this.transHorizSlider.on("change", lang.hitch(layerInfoNode, function(newTransValue) {
-        this.setOpacity(newTransValue);
+        var rootlayer = this.getRootNode();
+        rootlayer.setOpacity(1 - newTransValue);
+        // console.log(this.getOpacity())
+        // this.setOpacity(newTransValue);
 
       })));
 
-      new HorzRuleLabels({
+      vs.horzRuleLabels = new HorzRuleLabels({
         container: "bottomDecoration"
-      }, vs.transparencyRule);
+      }, sliderDivRulerNode);
+      //Event to destroy the transparency elements once user is done witht them
+      on(vs.transHorizSlider, "blur", function(){
+        domConstruct.destroy(vs.transHorizSlider.id);
+        domConstruct.destroy(vs.horzRuleLabels.id);
+        domConstruct.destroy(sliderDivContainerNode);
+
+        vs.transHorizSlider = null;
+        vs.horzRuleLabels = null;
+        console.log("close Transparency window");
+      });
+
+
     },
 
     _openTable: function (layerInfoNode, layerID) {
@@ -389,47 +402,44 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         }
 
         //add request to get info about the layer
-        var requestHandle = esriRequest({
-          "url": layerUrl,
-          "content": {
-            "f": "json"
-          },
-          "callbackParamName": "callback"
-        });
-        requestHandle.then(requestSucceeded, requestFailed);
+        // var requestHandle = esriRequest({
+        //   "url": layerUrl,
+        //   "content": {
+        //     "f": "json"
+        //   },
+        //   "callbackParamName": "callback"
+        // });
+        // requestHandle.then(requestSucceeded, requestFailed);
 
-        function requestSucceeded(response){
-          console.log(response)
-          //Set vairable from json request
-
-          var mtitle = (response["name"] != undefined ? response["name"] : response["mapName"]);
-          var mDescription = (response["name"] != undefined ? response["description"] : response["serviceDescription"]);
-          var mCopyright = response["copyrightText"];
-
-          var dialogContent = "<div><b>Description:</b> " + mDescription + "</div></br>"
-              + "<div><b>Copyright:</b> " + mCopyright + "</div></br>";
-
-          if(layerUrl.indexOf("utility.arcgis.com") >= 0){
-
-          }else{
-            dialogContent = dialogContent + "<div>" +'<a class="menu-item-description" target="_blank" href="' +
-                layerUrl + '">' + "See More at the Rest Endpoint" + '</a>' + "</div>";
-          }
-
-          vs.myDialog.set("title", mtitle);
-          vs.myDialog.set("content",dialogContent);
-
-          vs.myDialog.show();
-        }
-        function requestFailed(response, io){
-          console.log(response)
-        }
-
-
+        // function requestSucceeded(response){
+        //   console.log(response)
+        //   //Set vairable from json request
+        //
+        //   var mtitle = (response["name"] != undefined ? response["name"] : response["mapName"]);
+        //   var mDescription = (response["name"] != undefined ? response["description"] : response["serviceDescription"]);
+        //   var mCopyright = response["copyrightText"];
+        //
+        //   var dialogContent = "<div><b>Description:</b> " + mDescription + "</div></br>"
+        //       + "<div><b>Copyright:</b> " + mCopyright + "</div></br>";
+        //
+        //   if(layerUrl.indexOf("utility.arcgis.com") >= 0){
+        //
+        //   }else{
+        //     dialogContent = dialogContent + "<div>" +'<a class="menu-item-description" target="_blank" href="' +
+        //         layerUrl + '">' + "See More at the Rest Endpoint" + '</a>' + "</div>";
+        //   }
+        //
+        //   vs.myDialog.set("title", mtitle);
+        //   vs.myDialog.set("content",dialogContent);
+        //
+        //   vs.myDialog.show();
+        // }
+        // function requestFailed(response, io){
+        //   console.log(response)
+        // }
 
 
-
-        //window.open(url, '_blank');
+        window.open(url, '_blank');
       }));
     },
 
@@ -456,6 +466,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
               if(vs.curLayer.type =='Feature Layer'){
                 if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
                   var layerRenderer = vs.symbolChooser.getRenderer();
+                  layerRenderer.defaultSymbol = null;
 
                   var layerDrawingOptions = [];
                   var layerDrawingOption = new LayerDrawingOptions();
@@ -485,25 +496,60 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
-          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
+          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
             var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
             rLen = layerdrawingOps.length;
-            rend = layerdrawingOps[rLen - 1].renderer;
+            rend = layerdrawingOps[layerInfoNode.subId].renderer;
+            // rend = layerdrawingOps[rLen - 1].renderer;
           }else{
             rend = layerObject.renderer;
           }
 
-        }else{
+        }else {
           rend = layerObject.renderer;
         }
 
-        vs.symbolChooser = new RendererChooser({
-          renderer: rend, //this._layerInfo.layerObject.renderer,
-          fields:["STATUS"]
-        }, 'rendChanger');
+        if(!rend.defaultSymbol){
+          var testSymbol;
 
+          if(rend.infos){
+              testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
+              testSymbol.color.a = 0;
+              rend.defaultSymbol = testSymbol;
+
+              if(rend.defaultSymbol.type =="picturemarkersymbol"){
+                rend.defaultSymbol.setWidth(1);
+              }
+          }
+        }
+
+        // rend.defaultSymbol = null;
+
+        vs.symbolChooser = new RendererChooser({
+          //renderer: vs.curLayer.renderer,
+          renderer: rend,
+          // fields:["type"]
+        }, 'rendChanger');
         symPopup.resize();
       }));
+    },
+
+    _createdefultSymbol: function(dsymbol){
+      // _cloneSymbol:function(symbol){
+        if(!dsymbol){
+          return null;
+        }
+        var jsonSym = dsymbol.toJson();
+        var clone = jsonUtils.fromJson(jsonSym);
+        return clone;
+    // },
+      // if (symbolType.includes("marker")){
+      //   return "marker";
+      // }else if (symbolType.includes("line")){
+      //   return "line";
+      // }else if (symbolType.includes("fill")){
+      //   return "fill"
+      // }
     },
 
     _controlPopups: function(layerInfoNode, layerID){

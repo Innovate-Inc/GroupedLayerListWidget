@@ -215,7 +215,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             i++;
           }
         }else if (isRootLayer){
-          var r = 0
+          var r = 0;
           for(var type in RootLayerOnly){
             var menuItem1 = new MenuItem({
               id: layerInfoNode.id + "_" + r,
@@ -496,10 +496,11 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
-          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
+          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
             var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
             rLen = layerdrawingOps.length;
-            rend = layerdrawingOps[rLen - 1].renderer;
+            rend = layerdrawingOps[layerInfoNode.subId].renderer;
+            // rend = layerdrawingOps[rLen - 1].renderer;
           }else{
             rend = layerObject.renderer;
           }
@@ -509,16 +510,25 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         }
 
         if(!rend.defaultSymbol){
-          var testSymbol
+          var testSymbol;
+
           if(rend.infos){
-            testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
-            testSymbol.color.a = 0
-            rend.defaultSymbol = testSymbol;
+              testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
+              testSymbol.color.a = 0;
+              rend.defaultSymbol = testSymbol;
+
+              if(rend.defaultSymbol.type =="picturemarkersymbol"){
+                rend.defaultSymbol.setWidth(1);
+              }
           }
         }
+
+        // rend.defaultSymbol = null;
+
         vs.symbolChooser = new RendererChooser({
+          //renderer: vs.curLayer.renderer,
           renderer: rend,
-          fields:["type"]
+          // fields:["type"]
         }, 'rendChanger');
         symPopup.resize();
       }));

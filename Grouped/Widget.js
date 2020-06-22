@@ -468,11 +468,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                   var layerRenderer = vs.symbolChooser.getRenderer();
                   layerRenderer.defaultSymbol = null;
 
-                  var layerDrawingOptions = [];
+                  var layerDrawingOptions = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
                   var layerDrawingOption = new LayerDrawingOptions();
                   layerDrawingOption.renderer = layerRenderer;
-                  layerDrawingOptions[0] = layerDrawingOption;
-
+                  layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
                   layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
                 }else{
                   var layerRenderer = vs.symbolChooser.getRenderer();
@@ -496,15 +495,21 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
-          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
-            var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
-            rLen = layerdrawingOps.length;
-            rend = layerdrawingOps[layerInfoNode.subId].renderer;
-            // rend = layerdrawingOps[rLen - 1].renderer;
+          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
+            if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId]){
+              if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
+                var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
+                rLen = layerdrawingOps.length;
+                rend = layerdrawingOps[layerInfoNode.subId].renderer;
+                // rend = layerdrawingOps[rLen - 1].renderer;
+              }
+
+            }else{
+              rend = layerObject.renderer;
+            }
           }else{
             rend = layerObject.renderer;
           }
-
         }else {
           rend = layerObject.renderer;
         }
@@ -520,22 +525,20 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
               if(rend.defaultSymbol.type =="picturemarkersymbol"){
                 rend.defaultSymbol.setWidth(1);
               }
+          }else{
+             rend.defaultSymbol = rend.getSymbol();
           }
         }
 
-        // rend.defaultSymbol = null;
-
         vs.symbolChooser = new RendererChooser({
-          //renderer: vs.curLayer.renderer,
           renderer: rend,
-          // fields:["type"]
+          fields:[]
         }, 'rendChanger');
-        symPopup.resize();
       }));
     },
 
     _createdefultSymbol: function(dsymbol){
-      // _cloneSymbol:function(symbol){
+
         if(!dsymbol){
           return null;
         }

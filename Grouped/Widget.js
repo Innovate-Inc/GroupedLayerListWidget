@@ -1,9 +1,9 @@
 define(['dojo/_base/declare', 'jimu/BaseWidget', 'dojo/_base/lang', 'dojo/dom', 'dojo/dom-class', 'dojo/on', 'dojo/dom-construct', 'dijit/TitlePane', 'dijit/form/DropDownButton', 'dijit/DropDownMenu', 'dijit/Menu', 'dijit/MenuItem', 'dijit/MenuSeparator',
   'dijit/CheckedMenuItem','jimu/LayerInfos/LayerInfos', 'jimu/LayerStructure', 'esri/layers/LayerDrawingOptions', 'jimu/dijit/Popup', 'jimu/dijit/RendererChooser', 'jimu/portalUrlUtils', 'jimu/WidgetManager',
-  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'dijit/Dialog'],
+  'dijit/form/HorizontalSlider', 'dijit/form/HorizontalRuleLabels', 'dojo/dom-style', 'esri/request', 'esri/symbols/jsonUtils', 'dijit/Dialog'],
 function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, DropDownButton, DropDownMenu, Menu, MenuItem,
          MenuSeparator, CheckedMenuItem, LayerInfos, LayerStructure, LayerDrawingOptions, Popup, RendererChooser, portalUrlUtils,
-         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, Dialog) {
+         WidgetManager, HorizSlider, HorzRuleLabels, domStyle, esriRequest, jsonUtils, Dialog) {
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -139,7 +139,22 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
       layerInfoNode.getLayerType().then(lang.hitch(layerInfoNode, function(layerType){
         //Set up option for layer types
+        console.log("Layer Type: " + layerType);
         var RootLayerOnly = ["zoomto", "Transparency", "url"];
+        var RasterLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
+        var WMSLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
         var KMLFolderOnly = [
           {
             "name": "url",
@@ -214,7 +229,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             i++;
           }
         }else if (isRootLayer){
-          var r = 0
+          var r = 0;
           for(var type in RootLayerOnly){
             var menuItem1 = new MenuItem({
               id: layerInfoNode.id + "_" + r,
@@ -255,6 +270,28 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           //   menu.addChild(menuItem1);
           //   k++;
           // }
+        }else if(layerType === "WMSLayer"){
+          var k = 0
+          for(var type in WMSLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + k,
+              label: WMSLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            k++;
+          }
+        }else if(layerType === "RasterLayer"){
+          var r = 0
+          for(var type in RasterLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + r,
+              label: RasterLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            r++;
+          }
         }
 
         var dropbtn = new DropDownButton({
@@ -465,12 +502,12 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
               if(vs.curLayer.type =='Feature Layer'){
                 if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
                   var layerRenderer = vs.symbolChooser.getRenderer();
+                  layerRenderer.defaultSymbol = null;
 
-                  var layerDrawingOptions = [];
+                  var layerDrawingOptions = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
                   var layerDrawingOption = new LayerDrawingOptions();
                   layerDrawingOption.renderer = layerRenderer;
-                  layerDrawingOptions[0] = layerDrawingOption;
-
+                  layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
                   layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
                 }else{
                   var layerRenderer = vs.symbolChooser.getRenderer();
@@ -495,24 +532,67 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
           if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
-            var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
-            rLen = layerdrawingOps.length;
-            rend = layerdrawingOps[rLen - 1].renderer;
+            if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId]){
+              if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
+                var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
+                rLen = layerdrawingOps.length;
+                rend = layerdrawingOps[layerInfoNode.subId].renderer;
+                // rend = layerdrawingOps[rLen - 1].renderer;
+              }else{
+                rend = layerObject.renderer;
+              }
+            }else{
+              rend = layerObject.renderer;
+            }
           }else{
             rend = layerObject.renderer;
           }
-
-        }else{
+        }else {
           rend = layerObject.renderer;
         }
 
-        vs.symbolChooser = new RendererChooser({
-          renderer: rend, //this._layerInfo.layerObject.renderer,
-          fields:["STATUS"]
-        }, 'rendChanger');
+        if(!rend.defaultSymbol){
+          var testSymbol;
 
-        symPopup.resize();
+          if(rend.infos){
+              testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
+              testSymbol.color.a = 0;
+
+              rend.defaultSymbol = testSymbol;
+
+              if(rend.defaultSymbol.type =="picturemarkersymbol"){
+                rend.defaultSymbol.setWidth(1);
+              }else{
+                rend.defaultSymbol.outline.width = 0;
+              }
+          }else{
+             rend.defaultSymbol = rend.getSymbol();
+          }
+        }
+
+        vs.symbolChooser = new RendererChooser({
+          renderer: rend,
+          fields:[]
+        }, 'rendChanger');
       }));
+    },
+
+    _createdefultSymbol: function(dsymbol){
+
+        if(!dsymbol){
+          return null;
+        }
+        var jsonSym = dsymbol.toJson();
+        var clone = jsonUtils.fromJson(jsonSym);
+        return clone;
+    // },
+      // if (symbolType.includes("marker")){
+      //   return "marker";
+      // }else if (symbolType.includes("line")){
+      //   return "line";
+      // }else if (symbolType.includes("fill")){
+      //   return "fill"
+      // }
     },
 
     _controlPopups: function(layerInfoNode, layerID){

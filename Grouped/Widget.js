@@ -141,6 +141,13 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         //Set up option for layer types
         console.log("Layer Type: " + layerType);
         var RootLayerOnly = ["zoomto", "Transparency", "url"];
+        var RasterLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
         var WMSLayer = [{
             "name": "controlLabels",
             "label": "Toggle labels"
@@ -265,7 +272,6 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           // }
         }else if(layerType === "WMSLayer"){
           var k = 0
-
           for(var type in WMSLayer){
             var menuItem1 = new MenuItem({
               id: layerInfoNode.id + "_" + k,
@@ -274,6 +280,17 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             });
             menu.addChild(menuItem1);
             k++;
+          }
+        }else if(layerType === "RasterLayer"){
+          var r = 0
+          for(var type in RasterLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + r,
+              label: RasterLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            r++;
           }
         }
 

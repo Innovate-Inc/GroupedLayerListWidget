@@ -141,6 +141,20 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         //Set up option for layer types
         console.log("Layer Type: " + layerType);
         var RootLayerOnly = ["zoomto", "Transparency", "url"];
+        var RasterLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
+        var WMSLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
         var KMLFolderOnly = [
           {
             "name": "url",
@@ -256,6 +270,28 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           //   menu.addChild(menuItem1);
           //   k++;
           // }
+        }else if(layerType === "WMSLayer"){
+          var k = 0
+          for(var type in WMSLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + k,
+              label: WMSLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            k++;
+          }
+        }else if(layerType === "RasterLayer"){
+          var r = 0
+          for(var type in RasterLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + r,
+              label: RasterLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            r++;
+          }
         }
 
         var dropbtn = new DropDownButton({
@@ -468,11 +504,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                   var layerRenderer = vs.symbolChooser.getRenderer();
                   layerRenderer.defaultSymbol = null;
 
-                  var layerDrawingOptions = [];
+                  var layerDrawingOptions = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
                   var layerDrawingOption = new LayerDrawingOptions();
                   layerDrawingOption.renderer = layerRenderer;
-                  layerDrawingOptions[0] = layerDrawingOption;
-
+                  layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
                   layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
                 }else{
                   var layerRenderer = vs.symbolChooser.getRenderer();
@@ -496,15 +531,22 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
-          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
-            var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
-            rLen = layerdrawingOps.length;
-            rend = layerdrawingOps[layerInfoNode.subId].renderer;
-            // rend = layerdrawingOps[rLen - 1].renderer;
+          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
+            if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId]){
+              if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
+                var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
+                rLen = layerdrawingOps.length;
+                rend = layerdrawingOps[layerInfoNode.subId].renderer;
+                // rend = layerdrawingOps[rLen - 1].renderer;
+              }else{
+                rend = layerObject.renderer;
+              }
+            }else{
+              rend = layerObject.renderer;
+            }
           }else{
             rend = layerObject.renderer;
           }
-
         }else {
           rend = layerObject.renderer;
         }
@@ -515,27 +557,28 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           if(rend.infos){
               testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
               testSymbol.color.a = 0;
+
               rend.defaultSymbol = testSymbol;
 
               if(rend.defaultSymbol.type =="picturemarkersymbol"){
                 rend.defaultSymbol.setWidth(1);
+              }else{
+                rend.defaultSymbol.outline.width = 0;
               }
+          }else{
+             rend.defaultSymbol = rend.getSymbol();
           }
         }
 
-        // rend.defaultSymbol = null;
-
         vs.symbolChooser = new RendererChooser({
-          //renderer: vs.curLayer.renderer,
           renderer: rend,
-          // fields:["type"]
+          fields:[]
         }, 'rendChanger');
-        symPopup.resize();
       }));
     },
 
     _createdefultSymbol: function(dsymbol){
-      // _cloneSymbol:function(symbol){
+
         if(!dsymbol){
           return null;
         }

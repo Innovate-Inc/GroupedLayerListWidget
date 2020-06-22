@@ -141,6 +141,13 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         //Set up option for layer types
         console.log("Layer Type: " + layerType);
         var RootLayerOnly = ["zoomto", "Transparency", "url"];
+        var WMSLayer = [{
+            "name": "controlLabels",
+            "label": "Toggle labels"
+          },{
+            "name": "url",
+            "label": "Show item details"
+          }];
         var KMLFolderOnly = [
           {
             "name": "url",
@@ -256,6 +263,18 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           //   menu.addChild(menuItem1);
           //   k++;
           // }
+        }else if(layerType === "WMSLayer"){
+          var k = 0
+
+          for(var type in WMSLayer){
+            var menuItem1 = new MenuItem({
+              id: layerInfoNode.id + "_" + k,
+              label: WMSLayer[type].label,
+              onClick: lang.hitch(layerInfoNode, vs._layerSubMenuClicked)
+            });
+            menu.addChild(menuItem1);
+            k++;
+          }
         }
 
         var dropbtn = new DropDownButton({
@@ -502,8 +521,9 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                 rLen = layerdrawingOps.length;
                 rend = layerdrawingOps[layerInfoNode.subId].renderer;
                 // rend = layerdrawingOps[rLen - 1].renderer;
+              }else{
+                rend = layerObject.renderer;
               }
-
             }else{
               rend = layerObject.renderer;
             }
@@ -520,10 +540,13 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           if(rend.infos){
               testSymbol = vs._createdefultSymbol(rend.infos[0].symbol);
               testSymbol.color.a = 0;
+
               rend.defaultSymbol = testSymbol;
 
               if(rend.defaultSymbol.type =="picturemarkersymbol"){
                 rend.defaultSymbol.setWidth(1);
+              }else{
+                rend.defaultSymbol.outline.width = 0;
               }
           }else{
              rend.defaultSymbol = rend.getSymbol();

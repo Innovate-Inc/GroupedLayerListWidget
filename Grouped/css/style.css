@@ -84,7 +84,7 @@
 .jimu-widget-grouped .dijitTitlePaneTextNode {
   font-size: 20px;
   font-weight: bold;
-  color: #ffffff;
+  color: black;
 }
 .jimu-widget-grouped .dijitArrowNode {
   /*display:none;*/
@@ -98,7 +98,7 @@
 /*}*/
 
 .claro .dijitTitlePaneTitle {
-  background-color: black;
+  background-color: white;
   background-image: none !important;
 
   border-top: none !important;
@@ -285,6 +285,15 @@
   overflow: hidden;
   margin-top: 2px;
   margin-bottom: 1px;
+}
+
+.claro .dijitTitlePane .dijitArrowNode, .claro .dijitFieldset .dijitArrowNode{
+  margin-top: 10px!important;
+}
+
+.claro .dijitTitlePaneContentOuter{
+  border-left: none!important;
+  border-right: none!important;
 }
 
 /*popup menu*/

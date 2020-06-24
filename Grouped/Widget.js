@@ -70,7 +70,8 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
     _buildGroup: function(g){
       //make a title pane for each group
-      var tp = new TitlePane({title: '+ ' + g.name,
+      // var tp = new TitlePane({title: '+ ' + g.name,
+      var tp = new TitlePane({title: g.name,
       // var tp = new TitlePane({title: g.name,
         content: "",
         open: false});
@@ -684,11 +685,11 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
     },
 
     _showTitlePane: function () {
-      this.set('title', this.title.replace("+ ", "- "));
+      //this.set('title', this.title.replace("+ ", "- "));
     },
 
     _hideTitlePane: function () {
-      this.set('title', this.title.replace("- ", "+ "));
+      //this.set('title', this.title.replace("- ", "+ "));
     },
 
     _toggleLayerVis: function(evt){

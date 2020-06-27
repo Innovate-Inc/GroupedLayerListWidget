@@ -167,10 +167,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             "name": "Transparency",
             "label": "Transparency"
           },
-          // {
-          //   "name": "changeSymbology",
-          //   "label": "Change layer symbol"
-          // },
+          {
+            "name": "changeSymbology",
+            "label": "Change layer symbol"
+          },
           {
             "name": "controlPopup",
             "label": "Disable pop-up"
@@ -192,10 +192,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           "name": "controlLabels",
           "label": "Toggle labels"
         },
-        //   {
-        //   "name": "changeSymbology",
-        //   "label": "Change layer symbol"
-        // },
+          {
+          "name": "changeSymbology",
+          "label": "Change layer symbol"
+        },
           {
           "name": "table",
           "label": "View in attribute table"

@@ -91,45 +91,43 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         if (object.hasOwnProperty(property)) {
           // Add toggle and layer name
           var aliasLayer = layerStructure.getNodeById(property);
-          //get layer type
-          isRoot = aliasLayer.isRoot();
-          // aliasLayer.getLayerType().then(lang.hitch(aliasLayer, function(layerType){
 
-            var sublayers = aliasLayer.getSubNodes().length;
-            if (object[property].display && sublayers == 0) {
-              var layerDivNode = domConstruct.toDom("<div class='layerDiv'></div>");
-              var btnAndLabel = domConstruct.toDom("<div class='layerBTN'></div>");
-              var popupMenuStuff = domConstruct.toDom("<div id='" + property + "_layer'></div>");
+          if (aliasLayer != null){
+             //get layer type
+            isRoot = aliasLayer.isRoot();
 
-              var onoffSwitchNode = domConstruct.toDom("<div class='onoffswitch'></div>");
+              var sublayers = aliasLayer.getSubNodes().length;
+              if (object[property].display && sublayers == 0) {
+                var layerDivNode = domConstruct.toDom("<div class='layerDiv'></div>");
+                var btnAndLabel = domConstruct.toDom("<div class='layerBTN'></div>");
+                var popupMenuStuff = domConstruct.toDom("<div id='" + property + "_layer'></div>");
+                var onoffSwitchNode = domConstruct.toDom("<div class='onoffswitch'></div>");
 
-              var inputNode = domConstruct.toDom("<input type='checkbox' name='onoffswitch'  class='onoffswitch-checkbox' id='" + property + "switch'>");
-              on(inputNode, 'click', vs._toggleLayerVis);
-              var inputlabel = domConstruct.toDom("<label class='onoffswitch-label' for='" + property + "switch'><span " +
-                "class='onoffswitch-inner'></span><span class='onoffswitch-switch' data-bind='stopBubble:parentAction'></span></label>");
+                var inputNode = domConstruct.toDom("<input type='checkbox' name='onoffswitch'  class='onoffswitch-checkbox' id='" + property + "switch'>");
+                on(inputNode, 'click', vs._toggleLayerVis);
+                var inputlabel = domConstruct.toDom("<label class='onoffswitch-label' for='" + property + "switch'><span " +
+                  "class='onoffswitch-inner'></span><span class='onoffswitch-switch' data-bind='stopBubble:parentAction'></span></label>");
 
-              var layerTextNode = domConstruct.toDom("<div class='layerLabel'>" + aliasLayer.title + "</div>");
-              var menuBtn = domConstruct.toDom("<div class='layers-list-popupMenu-div' style='display: block'></div>");
+                var layerTextNode = domConstruct.toDom("<div class='layerLabel'>" + aliasLayer.title + "</div>");
+                var menuBtn = domConstruct.toDom("<div class='layers-list-popupMenu-div' style='display: block'></div>");
+                var dropbtn = vs._setMenuOptions(aliasLayer, popupMenuStuff);
 
-              var dropbtn = vs._setMenuOptions(aliasLayer, popupMenuStuff);
+                domConstruct.place(inputNode, onoffSwitchNode);
+                domConstruct.place(inputlabel, onoffSwitchNode);
 
-              domConstruct.place(inputNode, onoffSwitchNode);
-              domConstruct.place(inputlabel, onoffSwitchNode);
+                domConstruct.place(onoffSwitchNode, btnAndLabel);
+                domConstruct.place(layerTextNode, btnAndLabel);
+                // domConstruct.place(dropbtn.domNode, popupMenuStuff);
 
-              domConstruct.place(onoffSwitchNode, btnAndLabel);
-              domConstruct.place(layerTextNode, btnAndLabel);
-              // domConstruct.place(dropbtn.domNode, popupMenuStuff);
+                domConstruct.place(btnAndLabel, layerDivNode);
+                domConstruct.place(popupMenuStuff, layerDivNode);
 
-              domConstruct.place(btnAndLabel, layerDivNode);
-              domConstruct.place(popupMenuStuff, layerDivNode);
+                domConstruct.place(layerDivNode, groupNode);
 
-              domConstruct.place(layerDivNode, groupNode);
+                inputNode.checked = aliasLayer.isVisible();
+              }
+          }
 
-              inputNode.checked = aliasLayer.isVisible();
-              // row = row + "<div class='layerDiv' ><div class='onoffswitch'><input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='" + property + "switch'>" +
-              // "<label class='onoffswitch-label' for='" + property + "switch'><span class='onoffswitch-inner'></span><span class='onoffswitch-switch'></span></label></div><div class='layerLabel'>" + aliasLayer.title + "</div></div>";
-
-            }
         }
       }
 

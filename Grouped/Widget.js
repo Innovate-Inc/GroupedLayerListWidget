@@ -330,9 +330,18 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         vs._urlDescription(this, layerID);
       } else if(layerAction=="Transparency"){
         vs._changeTransparency(this, layerID);
+      }else if(layerAction=="Zoom to"){
+        vs._zoomTo(this, layerID);
       }
 
     },
+
+    _zoomTo: function (layerInfoNode, layerID){
+      console.log("zoom to");
+      layerInfoNode._layerInfo.layerObject._zoomConnect;
+      layerInfoNode._layerInfo.zoomTo();
+    },
+
     //Layer popup menu functions
     _changeTransparency: function (layerInfoNode, layerID){
       console.log("Transparency");

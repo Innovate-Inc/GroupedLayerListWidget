@@ -5,5 +5,5 @@
 
 ### Contact Information
 
-* **Frank Roberts**, GIS Coordinator froberts@innovateteam.com
-* **David Yarnell**, Geospatial Developer dyarnell@innovateteam.com
+* **Frank Roberts**, Director of Information Technology froberts@innovateteam.com
+* **David Yarnell**, Manager Geospatial/IT Development dyarnell@innovateteam.com

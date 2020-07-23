@@ -520,14 +520,25 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                   layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
                   layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
                 }else{
-                  var layerRenderer = vs.symbolChooser.getRenderer();
-                  vs.curLayer.setRenderer(layerRenderer);
-                  vs.curLayer.refresh();
-                  console.log("symbology changed");
+                  try {
+                    var layerRenderer = vs.symbolChooser.getRenderer();
+                    layerRenderer.defaultSymbol = null;
+                    var optionsArray = [];
+                    var layerDrawingOption = new LayerDrawingOptions();
+                    layerDrawingOption.renderer = layerRenderer;
+                    optionsArray[vs.curLayer.layerId] = layerDrawingOption;
+                    layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(optionsArray);
+                  } catch (e) {
+                    var layerRenderer = vs.symbolChooser.getRenderer();
+                    vs.curLayer.setRenderer(layerRenderer);
+                    vs.curLayer.refresh();
+                    console.log("symbology changed");
+                  }
+
                 }
 
               }else{
-                var layerRenderer = this.symbolChooser.getRenderer();
+                var layerRenderer = vs.symbolChooser.getRenderer();
                 vs.curLayer.setRenderer(layerRenderer);
                 vs.curLayer.refresh();
                 console.log("symbology changed");

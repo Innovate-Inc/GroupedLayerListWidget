@@ -100,7 +100,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
               if (object[property].display && sublayers == 0) {
                 var layerDivNode = domConstruct.toDom("<div class='layerDiv'></div>");
                 var btnAndLabel = domConstruct.toDom("<div class='layerBTN'></div>");
-                var popupMenuStuff = domConstruct.toDom("<div id='" + property + "_layer'></div>");
+                var popupMenuStuff = domConstruct.toDom("<div id='" + property + "_GLL_" + "_layer'></div>");
                 var onoffSwitchNode = domConstruct.toDom("<div class='onoffswitch'></div>");
 
                 var inputNode = domConstruct.toDom("<input type='checkbox' name='onoffswitch'  class='onoffswitch-checkbox' id='" + property + "switch'>");
@@ -353,7 +353,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
     },
 
     _createTransparencyWidget: function(layerInfoNode, layerID) {
-      layerNode = dom.byId(layerID + "_layer");
+      layerNode = dom.byId(layerID + "_GLL_" + "_layer");
 
       // var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode.parentElement, "last");
       var sliderDivContainerNode = domConstruct.create("div", { style: { width: "220px", right: "10px", display: "block" }, class: "popup-menu-transparency-body" }, layerNode, "last");
@@ -371,7 +371,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         intermediateChanges: true
       }, sliderDivNode);
 
-      vs.own(this.transHorizSlider.on("change", lang.hitch(layerInfoNode, function(newTransValue) {
+      vs.own(vs.transHorizSlider.on("change", lang.hitch(layerInfoNode, function(newTransValue) {
         var rootlayer = this.getRootNode();
         rootlayer.setOpacity(1 - newTransValue);
         // console.log(this.getOpacity())
@@ -510,31 +510,37 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
             onClick: lang.hitch(this,function(){
 
               if(vs.curLayer.type =='Feature Layer'){
-                if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
-                  var layerRenderer = vs.symbolChooser.getRenderer();
-                  layerRenderer.defaultSymbol = null;
-
-                  var layerDrawingOptions = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
-                  var layerDrawingOption = new LayerDrawingOptions();
-                  layerDrawingOption.renderer = layerRenderer;
-                  layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
-                  layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
-                }else{
-                  try {
+                try{
+                  if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
                     var layerRenderer = vs.symbolChooser.getRenderer();
                     layerRenderer.defaultSymbol = null;
-                    var optionsArray = [];
+
+                    var layerDrawingOptions = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
                     var layerDrawingOption = new LayerDrawingOptions();
                     layerDrawingOption.renderer = layerRenderer;
-                    optionsArray[vs.curLayer.layerId] = layerDrawingOption;
-                    layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(optionsArray);
-                  } catch (e) {
-                    var layerRenderer = vs.symbolChooser.getRenderer();
-                    vs.curLayer.setRenderer(layerRenderer);
-                    vs.curLayer.refresh();
-                    console.log("symbology changed");
+                    layerDrawingOptions[vs.curLayer.layerId] = layerDrawingOption;
+                    layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(layerDrawingOptions);
+                  }else{
+                    try {
+                      var layerRenderer = vs.symbolChooser.getRenderer();
+                      layerRenderer.defaultSymbol = null;
+                      var optionsArray = [];
+                      var layerDrawingOption = new LayerDrawingOptions();
+                      layerDrawingOption.renderer = layerRenderer;
+                      optionsArray[vs.curLayer.layerId] = layerDrawingOption;
+                      layerInfoNode._layerInfo.parentLayerInfo.layerObject.setLayerDrawingOptions(optionsArray);
+                    } catch (e) {
+                      var layerRenderer = vs.symbolChooser.getRenderer();
+                      vs.curLayer.setRenderer(layerRenderer);
+                      vs.curLayer.refresh();
+                      console.log("symbology changed");
+                    }
                   }
-
+                }catch (e) {
+                  var layerRenderer = vs.symbolChooser.getRenderer();
+                  vs.curLayer.setRenderer(layerRenderer);
+                  vs.curLayer.refresh();
+                  console.log("symbology changed");
                 }
 
               }else{
@@ -552,7 +558,8 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
         var rend;
         if(vs.curLayer.type =='Feature Layer'){
-          if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
+          try {
+            if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions){
             if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId]){
               if(layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions[layerInfoNode.subId].renderer){
                 var layerdrawingOps = layerInfoNode._layerInfo.parentLayerInfo.layerObject.layerDrawingOptions;
@@ -568,6 +575,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           }else{
             rend = layerObject.renderer;
           }
+        } catch (e) {
+            rend = layerObject.renderer;
+          }
+
         }else {
           rend = layerObject.renderer;
         }

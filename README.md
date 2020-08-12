@@ -5,8 +5,10 @@ Please see the links below for more information:
 * [Live Demo](https://it.innovateteam.com/Outgoing/Demos/Grouped/)
 * [Video Demo](https://www.youtube.com/watch?v=cptre1_TBt4&feature=youtu.be)
 * [How to configure the Grouped LayerList Widget within Esri's Web Application Builder for Developers](https://www.youtube.com/watch?v=4is8ZlKJYZ8&feature=youtu.be)
-
+* [Grouped Layerlist Widget User Guide](https://github.com/Innovate-Inc/GroupedLayerListWidget/wiki)
 
 Web Application Builder for Developer Version 2.16
 
 [Supported by WWF](https://wwf-sight.org/)
+
+

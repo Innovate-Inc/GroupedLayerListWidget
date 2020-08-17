@@ -75,7 +75,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       // var tp = new TitlePane({title: g.name,
         content: "",
         open: false});
-      dom.byId("holder").appendChild(tp.domNode);
+      var gllContainer = domConstruct.create("div", null, null, "First");
+      domConstruct.place(tp.domNode, gllContainer);
+      domConstruct.place(gllContainer, this.domNode);
+
       tp.startup();
       on(tp,'show', vs._showTitlePane);
       on(tp,'hide', vs._hideTitlePane);

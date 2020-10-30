@@ -27,10 +27,11 @@ define([
   'dojo/query',
   './LayerSelector',
   'jimu/LayerInfos/LayerInfos',
+  'jimu/dijit/CheckBox',
   'jimu/utils'
 ],
 function(declare, BaseWidgetSetting, html, CheckedMultiSelect, ValidationTextBox, _WidgetsInTemplateMixin, domConstruct,
-         dom, on, query, LayerSelector, LayerInfos, jimuUtils) {
+         dom, on, query, LayerSelector, LayerInfos, CheckBox, jimuUtils) {
 
   return declare([BaseWidgetSetting, _WidgetsInTemplateMixin], {
     baseClass: 'jimu-widget-wwf-grouped-setting',
@@ -203,6 +204,7 @@ function(declare, BaseWidgetSetting, html, CheckedMultiSelect, ValidationTextBox
 
     setConfig: function(config){
       this.textNode.value = config.configText;
+      this.displayVisLayers.setValue(config.displayVisLayers); //config.displayVisLayers
       this.config.Groups = config.Groups;
 
       this.config.Groups.forEach(function(g, i){
@@ -225,6 +227,7 @@ function(declare, BaseWidgetSetting, html, CheckedMultiSelect, ValidationTextBox
 
     getConfig: function(){
       //WAB will get config object through this method
+      vm.config.displayVisLayers = this.displayVisLayers.checked;
       return vm.config;
       // return {
       //   configText: this.textNode.value,

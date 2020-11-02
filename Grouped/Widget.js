@@ -47,12 +47,39 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
         }
       });
 
+      this.own(on(this.map,
+          'zoom-end',
+          lang.hitch(this, this._onZoomEnd)));
+
       //Dialog to hold metadata from rest endpoint
       vs.myDialog = new Dialog({
         title: "Metadata",
         style: "width: 400px"
       });
       console.log('startup');
+    },
+
+    _onZoomEnd: function(e){
+      console.log('zoomEnd');
+      var layerInfoArray = [];
+      var layerStructure = LayerStructure.getInstance();
+      var Groups = vs.config.Groups;
+
+       for (var g in Groups) {
+         for (var l in Groups[g].layerOptions){
+
+           var layerNode = layerStructure.getNodeById(l);
+           var isInScale = layerNode._layerInfo.isInScale();
+           //add code to grey out layer text if false and update visible layers number
+           var layerDomID = "label_" + l;
+           var layerNameLabelNode = dom.byId(layerDomID);
+           if(!isInScale){
+             domClass.add(layerNameLabelNode, "outofScale");
+           }else{
+             domClass.remove(layerNameLabelNode, "outofScale");
+           }
+         }
+       }
     },
 
     _userAddedLayerFrameword: function(layerInfo, layOpt){
@@ -71,8 +98,10 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
     _buildGroup: function(g){
       //make a title pane for each group
       // var tp = new TitlePane({title: '+ ' + g.name,
-      var tp = new TitlePane({title: g.name,
-      // var tp = new TitlePane({title: g.name,
+      // var groupLayerNumbers = domConstruct.toDom("<div class='visibleNumbers'></div>");
+      // dom.byId("holder").appendChild(groupLayerNumbers);
+      var tp = new TitlePane({title: g.name + '<div class="visibleNumbers"></div>',
+        id: g.name,
         content: "",
         open: false});
       var gllContainer = domConstruct.create("div", null, null, "First");
@@ -83,10 +112,12 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       on(tp,'show', vs._showTitlePane);
       on(tp,'hide', vs._hideTitlePane);
 
+
       //find alisa so layer
       var layerStructure = LayerStructure.getInstance();
 
-
+      var visLayerInGroup = 0;
+      var totalLayersInGroup = 0;
       var object = g.layerOptions;
       groupNode = domConstruct.toDom("<div></div>");
       var row = "";
@@ -111,7 +142,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                 var inputlabel = domConstruct.toDom("<label class='onoffswitch-label' for='" + property + "switch'><span " +
                   "class='onoffswitch-inner'></span><span class='onoffswitch-switch' data-bind='stopBubble:parentAction'></span></label>");
 
-                var layerTextNode = domConstruct.toDom("<div class='layerLabel'>" + aliasLayer.title + "</div>");
+                var layerTextNode = domConstruct.toDom("<div id='" + "label_" + property + "' class='layerLabel'>" + aliasLayer.title + "</div>");
                 var menuBtn = domConstruct.toDom("<div class='layers-list-popupMenu-div' style='display: block'></div>");
                 var dropbtn = vs._setMenuOptions(aliasLayer, popupMenuStuff);
 
@@ -128,6 +159,24 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
                 domConstruct.place(layerDivNode, groupNode);
 
                 inputNode.checked = aliasLayer.isVisible();
+                if(inputNode.checked){
+                  visLayerInGroup++;
+                }
+                totalLayersInGroup++;
+                //add event to listen for visibility change
+                on(aliasLayer, 'visibility-change', function(e){
+                  console.log("event change");
+                  var isVis = this.isVisible();
+                  if(isVis){
+                    visLayerInGroup++;
+                  }else{
+                    visLayerInGroup--;
+                  }
+                  if (vs.config.displayVisLayers){
+                    tp.set('title', g.name + '<div class="visibleNumbers">' + visLayerInGroup + '/' + totalLayersInGroup + '</div>');
+                  }
+                });
+
               }
           }
 
@@ -135,6 +184,11 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       }
 
       tp.set('Content', groupNode);
+      if (vs.config.displayVisLayers){
+        tp.set('title', g.name + '<div class="visibleNumbers">' + visLayerInGroup + '/' + totalLayersInGroup + '</div>')
+      }
+
+      // console.log(visLayerInGroup + totalLayersInGroup);
     },
 
     _setMenuOptions: function(layerInfoNode, menuContainerNode){
@@ -750,8 +804,6 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           }
         }
       //
-
-
     },
 
     onOpen: function(){

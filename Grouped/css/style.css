@@ -78,6 +78,11 @@
   max-width: 240px;
 }
 
+.jimu-widget-grouped .outofScale{
+  color: #999999;
+}
+
+
 .jimu-widget-grouped .layerDiv:hover{
   background-color: #b7bbb8;
 }
@@ -294,6 +299,16 @@
 .claro .dijitTitlePaneContentOuter{
   border-left: none!important;
   border-right: none!important;
+}
+
+.visibleNumbers{
+  float: right;
+  position: relative;
+  top: 2px;
+  color: grey;
+  /*border-bottom: 1px solid #b5bcc7;*/
+  /*font-size: 19px;*/
+  /*padding-bottom: 3px;*/
 }
 
 /*popup menu*/

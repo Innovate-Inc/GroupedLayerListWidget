@@ -8,7 +8,17 @@
     <input id="grpTxtName" type="text" class="wide"
        data-dojo-attach-point="grpTxtName"
        data-dojo-type="dijit/form/ValidationTextBox"/>
+    <table style="float: right">
+    <tbody>
+      <tr>
+        <td data-dojo-type="jimu/dijit/CheckBox" data-dojo-attach-point="displayVisLayers">
+        </td>
+        <td class="label">${nls.displayNumVisLayersLabel}</td>
+      </tr>
+    </tbody>
+    </table>
   </div>
+
   <div class="content">
     <div class="items-list jimu-not-selectable">
       <div class="add-btn" data-dojo-attach-event="click:_onBtnAddItemClicked">

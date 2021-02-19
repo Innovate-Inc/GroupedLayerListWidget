@@ -116,8 +116,8 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       //find alisa so layer
       var layerStructure = LayerStructure.getInstance();
 
-      var visLayerInGroup = 0;
-      var totalLayersInGroup = 0;
+      vs.visLayerInGroup = 0;
+      vs.totalLayersInGroup = 0;
       var object = g.layerOptions;
       groupNode = domConstruct.toDom("<div></div>");
       var row = "";
@@ -160,32 +160,19 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
 
                 inputNode.checked = aliasLayer.isVisible();
                 if(inputNode.checked){
-                  visLayerInGroup++;
+                  vs.visLayerInGroup++;
                 }
-                totalLayersInGroup++;
-                //add event to listen for visibility change
-                on(aliasLayer, 'visibility-change', function(e){
-                  console.log("event change");
-                  var isVis = this.isVisible();
-                  if(isVis){
-                    visLayerInGroup++;
-                  }else{
-                    visLayerInGroup--;
-                  }
-                  if (vs.config.displayVisLayers){
-                    tp.set('title', g.name + '<div class="visibleNumbers">' + visLayerInGroup + '/' + totalLayersInGroup + '</div>');
-                  }
-                });
+                vs.totalLayersInGroup++;
 
               }
           }
 
         }
       }
-
+      //set visible layers and totatl layers for each Group
       tp.set('Content', groupNode);
       if (vs.config.displayVisLayers){
-        tp.set('title', g.name + '<div class="visibleNumbers">' + visLayerInGroup + '/' + totalLayersInGroup + '</div>')
+        tp.set('title', g.name + '<div class="visibleNumbers">' + vs.visLayerInGroup + '/' + vs.totalLayersInGroup + '</div>')
       }
 
       // console.log(visLayerInGroup + totalLayersInGroup);
@@ -781,29 +768,61 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
     },
 
     _toggleLayerVis: function(evt){
+
       console.log("Make layer visible");
       var layerchkBox = evt.target;
       //get reference to the layer
       var layerStructure = LayerStructure.getInstance();
       var loi = layerchkBox.id.replace('switch','');
       var layerObj = layerStructure.getNodeById(loi);
+
+      //Get the visible numbers div
+      var panelID = evt.path[8].id;
+      var queryString = panelID + ' .visibleNumbers';
+      //dojo.query('#Issue .visibleNumbers')[0].innerHTML
+
       // //toggle layer visibility
         if(!layerchkBox.checked){
           // layerchkBox.checked = false;
           if(layerObj.isTiled()){
             vs.map.getLayer(layerObj.getRootNode().id).hide();
+            // vs._updateVisibleLayersLbl(panelID);
+
           }else{
             layerObj.hide();
+            // vs._updateVisibleLayersLbl(panelID);
           }
         }else{
            // layerchkBox.checked = true;
           if(layerObj.isTiled()){
             vs.map.getLayer(layerObj.getRootNode().id).show();
+            // vs._updateVisibleLayersLbl(panelID);
           }else{
             layerObj.show();
+            // vs._updateVisibleLayersLbl(panelID);
           }
         }
+        if (vs.config.displayVisLayers) {
+          vs._updateVisibleLayersLbl(panelID);
+        }
       //
+    },
+
+    _updateVisibleLayersLbl: function(panelID){
+      var queryStringCkbx = '#' + panelID + ' .onoffswitch-checkbox';
+      var groupCheckboxs = dojo.query(queryStringCkbx);
+      var visLayers = 0;
+      var nonVisLayers = 0;
+      groupCheckboxs.forEach(function (chkbox) {
+          if(chkbox.checked){
+            visLayers++;
+          }else{
+            nonVisLayers++;
+          }
+        })
+      var queryString = '#' + panelID + ' .visibleNumbers';
+      var panelLabels = dojo.query(queryString)[0];
+      panelLabels.innerText = visLayers + '/' + groupCheckboxs.length;
     },
 
     onOpen: function(){

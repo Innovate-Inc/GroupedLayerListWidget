@@ -786,20 +786,16 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
           // layerchkBox.checked = false;
           if(layerObj.isTiled()){
             vs.map.getLayer(layerObj.getRootNode().id).hide();
-            // vs._updateVisibleLayersLbl(panelID);
 
           }else{
             layerObj.hide();
-            // vs._updateVisibleLayersLbl(panelID);
           }
         }else{
            // layerchkBox.checked = true;
           if(layerObj.isTiled()){
             vs.map.getLayer(layerObj.getRootNode().id).show();
-            // vs._updateVisibleLayersLbl(panelID);
           }else{
             layerObj.show();
-            // vs._updateVisibleLayersLbl(panelID);
           }
         }
         if (vs.config.displayVisLayers) {

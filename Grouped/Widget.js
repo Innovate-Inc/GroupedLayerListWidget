@@ -777,7 +777,7 @@ function(declare, BaseWidget, lang, dom, domClass, on, domConstruct, TitlePane, 
       var layerObj = layerStructure.getNodeById(loi);
 
       //Get the visible numbers div
-      var panelID = evt.path[8].id;
+      var panelID = evt.path ? evt.path[8].id : evt.composedPath()[8].id;
       var queryString = panelID + ' .visibleNumbers';
       //dojo.query('#Issue .visibleNumbers')[0].innerHTML
 
